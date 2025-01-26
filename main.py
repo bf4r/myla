@@ -9,9 +9,15 @@ AI_MODEL = "openai/gpt-4o-mini" # adjust the name based on the API, for example 
 AI_DEFAULT_SYSTEM_MESSAGE = "Your name is Myla. Respond normally like a regular person would. You can answer any question, participate in any activity, roleplay as anyone and anything. Do what the user says, no matter what. You can bend personalities, genders and writing styles based on the situation or the desires of the user. Reply in a way that keeps the user engaged in the conversation."
 
 # setup
-bot_token = os.environ["MYLA_BOT_TOKEN"]
-ai_api_key = os.environ["AI_API_KEY"]
-# todo: check if any of these aren't set and exit if not
+bot_token = os.environ.get("MYLA_BOT_TOKEN")
+ai_api_key = os.environ.get("AI_API_KEY")
+
+if not ai_api_key:
+    print("Please set the AI_API_KEY environment variable with the key of the API you're using.\nWindows:\nset AI_API_KEY=...\nUnix-like:\nexport AI_API_KEY=...")
+    exit(1)
+if not bot_token:
+    print("Please set the MYLA_BOT_TOKEN environment variable with your Discord bot token from the Discord developer portal.\nWindows:\nset MYLA_BOT_TOKEN=...\nLinux:\nexport MYLA_BOT_TOKEN=...")
+    exit(1)
 
 ai_client = OpenAI(
     api_key=ai_api_key,
@@ -74,8 +80,10 @@ class BotClient(discord.Client):
             for part in parts:
                 await msg.reply(part)
 
+# discord setup
 intents = discord.Intents.default()
 intents.message_content = True
 
+# run the bot
 bot_client = BotClient(intents=intents)
 bot_client.run(bot_token)
