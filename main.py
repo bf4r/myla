@@ -16,6 +16,8 @@ class MyClient(discord.Client):
         print(f"{msg.author}: {msg.content}")
         if iscmd(msg, "hey"):
             await msg.reply("hello")
+        elif iscmd(msg, "ping"):
+            await msg.reply("pong!")
 
 intents = discord.Intents.default()
 intents.message_content = True
