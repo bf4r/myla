@@ -49,8 +49,10 @@ class BotClient(discord.Client):
             await msg.reply("pong!")
         elif iscmd(msg, "ai"):
             response_text = await ask_ai(msg)
-            await msg.reply(response_text)
-
+            max_msg_length = 2000
+            parts = [response_text[i: i + max_msg_length] for i in range(0, len(response_text), max_msg_length)]
+            for part in parts:
+                await msg.reply(part)
 
 intents = discord.Intents.default()
 intents.message_content = True
