@@ -28,8 +28,9 @@ async def ask_ai(msg):
         ai_user_active_chats[user_id] = "default"
     # check if either the user has no chats list or the active chat does not exist in their list
     # if not, create the default one
-    if user_id not in ai_chats or ai_user_active_chats[user_id] not in ai_chats[user_id]:
+    if user_id not in ai_chats:
         ai_chats[user_id] = {}
+    if ai_user_active_chats[user_id] not in ai_chats[user_id]:
         ai_chats[user_id][ai_user_active_chats[user_id]] = {
             "messages": [
                 {
@@ -48,3 +49,7 @@ async def ask_ai(msg):
     ai_chats[user_id][ai_user_active_chats[user_id]]["messages"].append({"role": "assistant", "content": response_text})
     return response_text
 
+def switch_ai_chat(msg):
+    user_id = msg.author.id
+    chat_name = msg.content[7:].strip() # remove ".aichat "
+    ai_user_active_chats[user_id] = chat_name

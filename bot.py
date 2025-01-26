@@ -1,5 +1,5 @@
 import discord
-from ai import ask_ai
+from ai import ask_ai, switch_ai_chat
 import os
 from config import *
 
@@ -22,6 +22,9 @@ class BotClient(discord.Client):
             await msg.reply("hello")
         elif iscmd(msg, "ping"):
             await msg.reply("pong!")
+        elif iscmd(msg, "aichat"):
+            switch_ai_chat(msg)
+            await msg.reply("switched chats")
         elif iscmd(msg, "ai"):
             response_text = await ask_ai(msg)
             max_msg_length = 2000
