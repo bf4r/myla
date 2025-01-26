@@ -1,7 +1,6 @@
 from openai import OpenAI
 import os
 from config import *
-import copy
 
 ai_api_key = os.environ.get("AI_API_KEY")
 if not ai_api_key:
@@ -29,10 +28,10 @@ default_chat_preset = {
 # default chat name is default
 ai_user_active_chats = {}
 
-async def ask_ai(msg):
-    prompt = msg.content[3:].strip() # remove ".ai "
+# default system messages for each user, defaults to the AI_DEFAULT_SYSTEM_MESSAGE
+ai_user_default_system_messages = {}
 
-    user_id = msg.author.id
+async def ask_ai(user_id, prompt):
     if user_id not in ai_user_active_chats:
         ai_user_active_chats[user_id] = "default"
 
@@ -44,7 +43,17 @@ async def ask_ai(msg):
 
     # check if the user has the active chat in the chats list, and if not, create it
     if active_chat not in ai_chats[user_id]:
-        ai_chats[user_id][active_chat] = copy.deepcopy(default_chat_preset)
+        system_message = AI_DEFAULT_SYSTEM_MESSAGE
+        if user_id in ai_user_default_system_messages:
+            system_message = ai_user_default_system_messages[user_id]
+        ai_chats[user_id][active_chat] = {
+            "messages": [
+                {
+                    "role": "system",
+                    "content": system_message,
+                }
+            ],
+        }
 
     # add the user message to the chat
     ai_chats[user_id][active_chat]["messages"].append({"role": "user", "content": prompt})
@@ -66,6 +75,19 @@ def get_ai_chats(user_id):
         return []
     return ai_chats[user_id]
 
-def reset_active_ai_chat(user_id):
+def reset_ai_chat(user_id, chat_name):
     if user_id in ai_chats:
-        ai_chats[user_id][ai_user_active_chats[user_id]] = copy.deepcopy(default_chat_preset)
+        system_message = AI_DEFAULT_SYSTEM_MESSAGE
+        if user_id in ai_user_default_system_messages:
+            system_message = ai_user_default_system_messages[user_id]
+        ai_chats[user_id][chat_name] = {
+            "messages": [
+                {
+                    "role": "system",
+                    "content": system_message,
+                }
+            ],
+        }
+
+def change_user_default_ai_system_message(user_id, text):
+    ai_user_default_system_messages[user_id] = text
