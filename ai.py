@@ -1,6 +1,7 @@
 from openai import OpenAI
 import os
 from config import *
+import copy
 
 ai_api_key = os.environ.get("AI_API_KEY")
 if not ai_api_key:
@@ -14,6 +15,15 @@ ai_client = OpenAI(
 
 ai_chats = {}
 
+default_chat_preset = {
+            "messages": [
+                {
+                    "role": "system",
+                    "content": AI_DEFAULT_SYSTEM_MESSAGE,
+                }
+            ],
+        }
+
 # tells which user is currently using which chat
 # e.g. user1 has activated chat1
 # default chat name is default
@@ -24,29 +34,28 @@ async def ask_ai(msg):
 
     user_id = msg.author.id
     if user_id not in ai_user_active_chats:
-        # if the user has just started chatting for the first time, set their active chat name to default
         ai_user_active_chats[user_id] = "default"
-    # check if either the user has no chats list or the active chat does not exist in their list
-    # if not, create the default one
+
+    active_chat = ai_user_active_chats[user_id]
+
+    # check if the user has a chats list, and if not, create it
     if user_id not in ai_chats:
         ai_chats[user_id] = {}
-    if ai_user_active_chats[user_id] not in ai_chats[user_id]:
-        ai_chats[user_id][ai_user_active_chats[user_id]] = {
-            "messages": [
-                {
-                    "role": "system",
-                    "content": AI_DEFAULT_SYSTEM_MESSAGE,
-                }
-            ],
-        }
 
-    ai_chats[user_id][ai_user_active_chats[user_id]]["messages"].append({"role": "user", "content": prompt})
+    # check if the user has the active chat in the chats list, and if not, create it
+    if active_chat not in ai_chats[user_id]:
+        ai_chats[user_id][active_chat] = copy.deepcopy(default_chat_preset)
+
+    # add the user message to the chat
+    ai_chats[user_id][active_chat]["messages"].append({"role": "user", "content": prompt})
+    # make the request
     completion = ai_client.chat.completions.create(
-        messages=ai_chats[user_id][ai_user_active_chats[user_id]].get("messages"),
+        messages=ai_chats[user_id][active_chat].get("messages"),
         model=AI_MODEL,
     )
     response_text = completion.choices[0].message.content
-    ai_chats[user_id][ai_user_active_chats[user_id]]["messages"].append({"role": "assistant", "content": response_text})
+    # add the ai message to the chat
+    ai_chats[user_id][active_chat]["messages"].append({"role": "assistant", "content": response_text})
     return response_text
 
 def switch_ai_chat(user_id, chat_name):
@@ -56,3 +65,7 @@ def get_ai_chats(user_id):
     if user_id not in ai_chats:
         return []
     return ai_chats[user_id]
+
+def reset_active_ai_chat(user_id):
+    if user_id in ai_chats:
+        ai_chats[user_id][ai_user_active_chats[user_id]] = copy.deepcopy(default_chat_preset)

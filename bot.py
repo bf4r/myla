@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from ai import ask_ai, switch_ai_chat, get_ai_chats
+from ai import *
 import os
 from config import *
 
@@ -34,22 +34,42 @@ async def ping(ctx):
 @bot.command(help="Lists your AI chats")
 async def aichats(ctx):
     chats = get_ai_chats(ctx.message.author.id)
-    if len(chats) == 0:
+    if not chats:
         await reply(ctx.message, "you have no chats")
+        return
     sb = ""
     for chat_name, chat in chats.items():
         sb += chat_name + f"\n  {len(chat['messages'])} messages\n"
     await reply(ctx.message, sb)
+
+@bot.command(help="Prompts AI in the current chat")
+async def ai(ctx):
+    response_text = await ask_ai(ctx.message)
+    await reply(ctx.message, response_text)
 
 @bot.command(help="Switches to or creates another AI chat")
 async def aichat(ctx, arg):
     switch_ai_chat(ctx.message.author.id, arg)
     await reply(ctx.message, "switched chat to " + arg)
 
-@bot.command(help="Prompts AI in the current chat")
-async def ai(ctx):
-    response_text = await ask_ai(ctx.message)
-    await reply(ctx.message, response_text)
+@bot.command(help="Resets the currently active chat")
+async def aireset(ctx):
+    reset_active_ai_chat(ctx.message.author.id)
+    await reply(ctx.message, f"reset the {arg} chat")
+
+@bot.command(help="Shows the messages of the currently active chat")
+async def aimessages(ctx):
+    user_id = ctx.message.author.id
+    if user_id in ai_chats:
+        if user_id in ai_user_active_chats:
+            active_chat_name = ai_user_active_chats[user_id]
+            if active_chat_name not in ai_chats[user_id]:
+                ai_chats[user_id][active_chat_name] = default_chat_preset
+            messages = ai_chats[user_id][active_chat_name]["messages"]
+            sb = ""
+            for message in messages:
+                sb += f"{message['role']}: {message['content']}\n"
+            await reply(ctx.message, sb)
 
 def run():
     bot.run(bot_token)
