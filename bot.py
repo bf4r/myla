@@ -33,16 +33,18 @@ async def ping(ctx):
 
 @bot.command()
 async def aichats(ctx):
-    chats = get_ai_chats(ctx.message)
+    chats = get_ai_chats(ctx.message.author.id)
+    if len(chats) == 0:
+        await reply(ctx.message, "you have no chats")
     sb = ""
     for chat_name, chat in chats.items():
         sb += chat_name + f"\n  {len(chat['messages'])} messages\n"
     await reply(ctx.message, sb)
 
 @bot.command()
-async def aichat(ctx):
-    switch_ai_chat(ctx.message)
-    await reply(ctx.message, "switched chats")
+async def aichat(ctx, arg):
+    switch_ai_chat(ctx.message.author.id, arg)
+    await reply(ctx.message, "switched chat to " + arg)
 
 @bot.command()
 async def ai(ctx):
