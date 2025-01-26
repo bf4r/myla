@@ -11,6 +11,7 @@ AI_DEFAULT_SYSTEM_MESSAGE = "Your name is Myla. Respond normally like a regular 
 # setup
 bot_token = os.environ["MYLA_BOT_TOKEN"]
 ai_api_key = os.environ["AI_API_KEY"]
+# todo: check if any of these aren't set and exit if not
 
 ai_client = OpenAI(
     api_key=ai_api_key,
@@ -19,16 +20,26 @@ ai_client = OpenAI(
 
 ai_chats = {}
 
+# tells which user is currently using which conversation
+# e.g. user1 has activated conversation1
+# default conversation name is default
+ai_user_active_conversations = {}
+
 def iscmd(msg, cmdstr):
     return msg.content.startswith(COMMAND_PREFIX + cmdstr);
 
 async def ask_ai(msg):
     prompt = msg.content[3:].strip() # remove ".ai "
 
-    # potentially add non-existent conversation
     user_id = msg.author.id
-    if user_id not in ai_chats:
-        ai_chats[user_id] = {
+    if user_id not in ai_user_active_conversations:
+        # if the user has just started chatting for the first time, set their active conversation name to default
+        ai_user_active_conversations[user_id] = "default"
+    # check if either the user has no conversations list or the active conversation does not exist in their list
+    # if not, create the default one
+    if user_id not in ai_chats or ai_user_active_conversations[user_id] not in ai_chats[user_id]:
+        ai_chats[user_id] = {}
+        ai_chats[user_id][ai_user_active_conversations[user_id]] = {
             "messages": [
                 {
                     "role": "system",
@@ -37,13 +48,13 @@ async def ask_ai(msg):
             ],
         }
 
-    ai_chats[user_id]["messages"].append({"role": "user", "content": prompt})
+    ai_chats[user_id][ai_user_active_conversations[user_id]]["messages"].append({"role": "user", "content": prompt})
     completion = ai_client.chat.completions.create(
-        messages=ai_chats[user_id].get("messages"),
+        messages=ai_chats[user_id][ai_user_active_conversations[user_id]].get("messages"),
         model=AI_MODEL,
     )
     response_text = completion.choices[0].message.content
-    ai_chats[user_id]["messages"].append({"role": "assistant", "content": response_text})
+    ai_chats[user_id][ai_user_active_conversations[user_id]]["messages"].append({"role": "assistant", "content": response_text})
     return response_text
 
 class BotClient(discord.Client):
