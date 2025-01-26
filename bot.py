@@ -23,13 +23,12 @@ async def reply(msg, text):
     for part in parts:
         await msg.reply(part)
 
-@bot.command(help="Says hello")
-async def hey(ctx):
-    await reply(ctx.message, "hello")
-
-@bot.command(help="Says pong!")
-async def ping(ctx):
-    await reply(ctx.message, "pong!")
+@bot.command(help="Says something")
+async def say(ctx, arg=None):
+    if arg is None:
+        await reply(ctx.message, "please specify what i should say")
+        return
+    await reply(ctx.message, arg)
 
 @bot.command(help="Lists your AI chats")
 async def aichats(ctx):
