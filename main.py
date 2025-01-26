@@ -17,25 +17,34 @@ ai_client = OpenAI(
     base_url=AI_BASE_URL
 )
 
+ai_chats = {}
+
 def iscmd(msg, cmdstr):
     return msg.content.startswith(COMMAND_PREFIX + cmdstr);
 
 async def ask_ai(msg):
     prompt = msg.content[3:].strip() # remove ".ai "
+
+    # potentially add non-existent conversation
+    user_id = msg.author.id
+    if user_id not in ai_chats:
+        ai_chats[user_id] = {
+            "messages": [
+                {
+                    "role": "system",
+                    "content": AI_DEFAULT_SYSTEM_MESSAGE,
+                }
+            ],
+        }
+
+    ai_chats[user_id]["messages"].append({"role": "user", "content": prompt})
     completion = ai_client.chat.completions.create(
-        messages=[
-            {
-                "role": "system",
-                "content": AI_DEFAULT_SYSTEM_MESSAGE,
-            },
-            {
-                "role": "user",
-                "content": prompt,
-            }
-        ],
+        messages=ai_chats[user_id].get("messages"),
         model=AI_MODEL,
     )
-    return completion.choices[0].message.content
+    response_text = completion.choices[0].message.content
+    ai_chats[user_id]["messages"].append({"role": "assistant", "content": response_text})
+    return response_text
 
 class BotClient(discord.Client):
     async def on_ready(self):
