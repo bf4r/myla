@@ -23,15 +23,15 @@ async def reply(msg, text):
     for part in parts:
         await msg.reply(part)
 
-@bot.command()
+@bot.command(help="Says hello")
 async def hey(ctx):
     await reply(ctx.message, "hello")
 
-@bot.command()
+@bot.command(help="Says pong!")
 async def ping(ctx):
     await reply(ctx.message, "pong!")
 
-@bot.command()
+@bot.command(help="Lists your AI chats")
 async def aichats(ctx):
     chats = get_ai_chats(ctx.message.author.id)
     if len(chats) == 0:
@@ -41,12 +41,12 @@ async def aichats(ctx):
         sb += chat_name + f"\n  {len(chat['messages'])} messages\n"
     await reply(ctx.message, sb)
 
-@bot.command()
+@bot.command(help="Switches to or creates another AI chat")
 async def aichat(ctx, arg):
     switch_ai_chat(ctx.message.author.id, arg)
     await reply(ctx.message, "switched chat to " + arg)
 
-@bot.command()
+@bot.command(help="Prompts AI in the current chat")
 async def ai(ctx):
     response_text = await ask_ai(ctx.message)
     await reply(ctx.message, response_text)
