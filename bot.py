@@ -1,4 +1,5 @@
 import discord
+from discord.ext import commands
 from ai import ask_ai, switch_ai_chat, get_ai_chats
 import os
 from config import *
@@ -9,48 +10,44 @@ if not bot_token:
     print("Please set the MYLA_BOT_TOKEN environment variable with your Discord bot token from the Discord developer portal.\nWindows:\nset MYLA_BOT_TOKEN=...\nLinux:\nexport MYLA_BOT_TOKEN=...")
     exit(1)
 
-# starts with this
-def iscmd(msg, cmdstr):
-    return msg.content.startswith(COMMAND_PREFIX + cmdstr)
+# discord setup
+intents = discord.Intents.default()
+intents.message_content = True
 
-# exact match
-def iscmde(msg, cmdstr):
-    return msg.content == (COMMAND_PREFIX + cmdstr)
+bot = commands.Bot(command_prefix=COMMAND_PREFIX, intents=intents)
 
+# helper that splits message every 2000 characters to get around the discord message character limit
 async def reply(msg, text):
     max_msg_length = 2000
     parts = [text[i: i + max_msg_length] for i in range(0, len(text), max_msg_length)]
     for part in parts:
         await msg.reply(part)
 
-class BotClient(discord.Client):
-    async def on_ready(self):
-        print(f"Logged on as {self.user}!")
+@bot.command()
+async def hey(ctx):
+    await reply(ctx.message, "hello")
 
-    async def on_message(self, msg):
-        print(f"{msg.author}: {msg.content}")
-        if iscmde(msg, "hey"):
-            await reply(msg, "hello")
-        elif iscmde(msg, "ping"):
-            await reply(msg, "pong!")
-        elif iscmde(msg, "aichats"):
-            chats = get_ai_chats(msg)
-            sb = ""
-            for chat_name, chat in chats.items():
-                sb += chat_name + f"\n  {len(chat["messages"])} messages\n"
-            await reply(msg, sb)
-        elif iscmd(msg, "aichat"):
-            switch_ai_chat(msg)
-            await reply(msg, "switched chats")
-        elif iscmd(msg, "ai"):
-            response_text = await ask_ai(msg)
-            await reply(msg, response_text)
+@bot.command()
+async def ping(ctx):
+    await reply(ctx.message, "pong!")
+
+@bot.command()
+async def aichats(ctx):
+    chats = get_ai_chats(ctx.message)
+    sb = ""
+    for chat_name, chat in chats.items():
+        sb += chat_name + f"\n  {len(chat['messages'])} messages\n"
+    await reply(ctx.message, sb)
+
+@bot.command()
+async def aichat(ctx):
+    switch_ai_chat(ctx.message)
+    await reply(ctx.message, "switched chats")
+
+@bot.command()
+async def ai(ctx):
+    response_text = await ask_ai(ctx.message)
+    await reply(ctx.message, response_text)
 
 def run():
-    # discord setup
-    intents = discord.Intents.default()
-    intents.message_content = True
-
-    # run the bot
-    bot_client = BotClient(intents=intents)
-    bot_client.run(bot_token)
+    bot.run(bot_token)
