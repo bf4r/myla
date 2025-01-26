@@ -53,3 +53,9 @@ def switch_ai_chat(msg):
     user_id = msg.author.id
     chat_name = msg.content[7:].strip() # remove ".aichat "
     ai_user_active_chats[user_id] = chat_name
+
+def get_ai_chats(msg):
+    user_id = msg.author.id
+    if user_id not in ai_chats:
+        return []
+    return ai_chats[user_id]
