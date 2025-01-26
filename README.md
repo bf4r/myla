@@ -90,3 +90,4 @@ pip install -r requirements.txt
 ```bash
 python main.py
 ```
+Anytime you want to run this again, make sure you have Python, cd into the repository folder, activate the virtual environment and do `python main.py`.
