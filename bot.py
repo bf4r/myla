@@ -58,18 +58,37 @@ async def aireset(ctx):
     await reply(ctx.message, f"reset the {arg} chat")
 
 @bot.command(help="Shows the messages of the currently active chat")
-async def aimessages(ctx):
+async def aimessagesactive(ctx):
     user_id = ctx.message.author.id
-    if user_id in ai_chats:
-        if user_id in ai_user_active_chats:
-            active_chat_name = ai_user_active_chats[user_id]
-            if active_chat_name not in ai_chats[user_id]:
-                ai_chats[user_id][active_chat_name] = default_chat_preset
-            messages = ai_chats[user_id][active_chat_name]["messages"]
-            sb = ""
-            for message in messages:
-                sb += f"{message['role']}: {message['content']}\n"
-            await reply(ctx.message, sb)
+    if user_id not in ai_chats:
+        await reply(ctx.message, "you don't have any chats")
+        return
+    if user_id not in ai_user_active_chats:
+        await reply(ctx.message, "you don't have any active chat")
+        return
+    active_chat_name = ai_user_active_chats[user_id]
+    if active_chat_name not in ai_chats[user_id]:
+        ai_chats[user_id][active_chat_name] = default_chat_preset
+    messages = ai_chats[user_id][active_chat_name]["messages"]
+    sb = ""
+    for message in messages:
+        sb += f"{message['role']}: {message['content']}\n"
+    await reply(ctx.message, sb)
+
+@bot.command(help="Shows the messages of a chat")
+async def aimessages(ctx, arg):
+    user_id = ctx.message.author.id
+    if user_id not in ai_chats:
+        await reply(ctx.message, "you don't have any chats")
+        return
+    if arg not in ai_chats[user_id]:
+        await reply(ctx.message, "you don't have a chat with that name")
+        return
+    messages = ai_chats[user_id][arg]["messages"]
+    sb = ""
+    for message in messages:
+        sb += f"{message['role']}: {message['content']}\n"
+    await reply(ctx.message, sb)
 
 def run():
     bot.run(bot_token)
