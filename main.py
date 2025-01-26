@@ -32,7 +32,7 @@ async def ask_ai(msg):
     )
     return completion.choices[0].message.content
 
-class MyClient(discord.Client):
+class BotClient(discord.Client):
     async def on_ready(self):
         print(f"Logged on as {self.user}!")
 
@@ -50,5 +50,5 @@ class MyClient(discord.Client):
 intents = discord.Intents.default()
 intents.message_content = True
 
-client = MyClient(intents=intents)
-client.run(bot_token)
+bot_client = BotClient(intents=intents)
+bot_client.run(bot_token)
