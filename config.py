@@ -17,3 +17,10 @@ AI_DEFAULT_SYSTEM_MESSAGE = "Your name is Myla. Respond normally like a regular 
 # not recommended for big servers, only for personal use. otherwise your API key might get drained so you might want to set the model to a cheap one
 # setting this to false disables the aimodel command
 AI_ALLOW_USERS_TO_CHANGE_MODEL = False
+
+# the maximum number of messages in a chat before it gets reset. highly recommended as the cost of a chat doubles roughly with every message
+# if you want to potentially run into errors and lose a lot of money, set it to -1 for no limit
+# possibly also adjust this based on model context length
+# whenever the chat has more messages than this, the first non-system message will be removed
+# 11 = 5 exchanges + 1 system message
+AI_MAX_CHAT_MESSAGES = 11

@@ -59,6 +59,7 @@ async def ask_ai(user_id, prompt):
 
     # add the user message to the chat
     ai_chats[user_id][active_chat]["messages"].append({"role": "user", "content": prompt})
+    truncate_ai_chat(ai_chats[user_id][active_chat])
     # make the request
     model = AI_MODEL
     if user_id in ai_user_preferred_models:
@@ -70,7 +71,18 @@ async def ask_ai(user_id, prompt):
     response_text = completion.choices[0].message.content
     # add the ai message to the chat
     ai_chats[user_id][active_chat]["messages"].append({"role": "assistant", "content": response_text})
+    truncate_ai_chat(ai_chats[user_id][active_chat])
     return response_text
+
+def truncate_ai_chat(chat):
+    if AI_MAX_CHAT_MESSAGES != -1:
+        messages = chat.get("messages")
+        if messages and len(messages) > AI_MAX_CHAT_MESSAGES:
+            # remove first non-system message (usually the 2nd one)
+            for i, message in enumerate(messages):
+                if message.get("role") != "system":
+                    messages.pop(i)
+                    break
 
 def switch_ai_chat(user_id, chat_name):
     ai_user_active_chats[user_id] = chat_name
