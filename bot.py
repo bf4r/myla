@@ -27,11 +27,17 @@ async def reply(msg, text):
 async def on_message(message):
     print(f"{message.author}: {message.content}")
 
+    # ignore bots
+    if message.author.bot:
+        return
+
+    # respond if the message isn't a command and a focused user sent it
     if not message.content.startswith(COMMAND_PREFIX):
         if message.author.id in ai_focused_users:
             ctx = await bot.get_context(message)
             await ai(ctx, prompt=message.content)
             return
+
     await bot.process_commands(message)
 
 # ----------------------------------------------------------------------------------------------------
