@@ -91,3 +91,6 @@ pip install -r requirements.txt
 python main.py
 ```
 Anytime you want to run this again, make sure you have Python, cd into the repository folder, activate the virtual environment and do `python main.py`.
+
+## Configuration
+Open the config.py file (in the root directory of the project) and read the comments to learn more about the configuration options. Edit them as you'd like. The configuration already contains sensible defaults, however most people don't have an OpenRouter account, so you might want to change the API type to OpenAI. In that case, change the AI_BASE_URL to https://api.openai.com/v1/ and the AI_MODEL to something like "gpt-4o" or whatever OpenAI model you want to use (without the "openai/" prefix which is specific to OpenRouter because it's an API that provides models from multiple organizations).
