@@ -29,6 +29,22 @@ pip install -r requirements.txt
 python main.py
 ```
 
+## You're probably asking...
+**I don't have an OpenRouter account, how can I use this with the OpenAI API instead?**
+- Edit config.py, change AI_BASE_URL to https://api.openai.com/v1/ and change AI_MODEL in a way that removes the "openai/" prefix and uses the correct model name for the OpenAI API.
+
+**Is this going to consume a lot of tokens/credits in my API provider?**
+- No, unless you pick an expensive model, chat a lot, don't reset chats often or set a high maximum message limit. With GPT-4o-mini (default model) and 10 messages before the first one gets removed, you can chat for hours without it costing you even a dollar.
+
+**Is this safe? Is it malware?**
+- Yes it's safe, no, it's not malware. You can look through the code.
+
+**Will this steal my API key?**
+- No. You can look through the code. Unless you choose an untrustworthy API provider, this won't steal your API keys or data. It won't send any requests anywhere other than the AI API provider.
+
+**Can I use this system with my own bot?**
+- Yes, just create an application on the Discord Developer Portal, copy its bot token and set the MYLA_BOT_TOKEN environment variable to use that bot's account. Check the Installation section for further details.
+
 ## Installation
 ### 0. Install git if you don't already have it
 Alternatively, you can download the ZIP file using the Code button on GitHub and clicking Download ZIP. Then extract it and go into that folder. If you do this, you can skip step 1.
