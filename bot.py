@@ -142,11 +142,13 @@ async def aideletechat(ctx, *, chat_name=None):
         return
     await reply(ctx.message, f"the {chat_name} chat has been deleted")
 
-@bot.command(brief="Changes your model", 
-             help="""Changes your model.
+@bot.command(brief="Changes or shows your current model", 
+             description="Changes the model used for your chats until you change it again. Displays which model is being used if used without arguments.",
+             help="""
              Make sure to set the model ID according to the format of the API the bot is currently using.
-             For example, if the API is OpenRouter (the default), the model ID could be "organization/model", for example "openai/gpt-4o".
-             If it's set to OpenAI, it might be "gpt-4o".
+             For example, if the API base URL is OpenRouter's URL (the default), the model ID could be "organization/model", for example "openai/gpt-4o".
+             If it's set to OpenAI's URL, it might be just "gpt-4o".
+
              You can check which API the model is using using the aiapibase command. This will show the base URL of the AI API.
 
              You can't change the model yourself unless the person managing this bot enables it in the configuration.
