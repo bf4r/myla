@@ -31,6 +31,8 @@ ai_user_active_chats = {}
 # default system messages for each user, defaults to the AI_DEFAULT_SYSTEM_MESSAGE
 ai_user_default_system_messages = {}
 
+ai_user_preferred_models = {}
+
 async def ask_ai(user_id, prompt):
     if user_id not in ai_user_active_chats:
         ai_user_active_chats[user_id] = "default"
@@ -58,9 +60,12 @@ async def ask_ai(user_id, prompt):
     # add the user message to the chat
     ai_chats[user_id][active_chat]["messages"].append({"role": "user", "content": prompt})
     # make the request
+    model = AI_MODEL
+    if user_id in ai_user_preferred_models:
+        model = ai_user_preferred_models[user_id]
     completion = ai_client.chat.completions.create(
         messages=ai_chats[user_id][active_chat].get("messages"),
-        model=AI_MODEL,
+        model=model,
     )
     response_text = completion.choices[0].message.content
     # add the ai message to the chat
@@ -96,3 +101,6 @@ def delete_ai_chat(user_id, chat_name):
     if user_id in ai_chats:
         if chat_name in ai_chats[user_id]:
             del ai_chats[user_id][chat_name]
+
+def change_user_preferred_model(user_id, model_id):
+    ai_user_preferred_models[user_id] = model_id

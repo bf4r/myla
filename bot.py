@@ -142,6 +142,26 @@ async def aideletechat(ctx, *, chat_name=None):
         return
     await reply(ctx.message, f"the {chat_name} chat has been deleted")
 
+@bot.command(help="Changes your model")
+async def aimodel(ctx, *, model_id=None):
+    user_id = ctx.message.author.id
+    if model_id is None:
+        if user_id in ai_user_preferred_models:
+            extra_msg = ""
+            if ai_user_preferred_models[user_id] == AI_MODEL:
+                extra_msg = " and it's also the default model"
+            await reply(ctx.message, f"your current model is {ai_user_preferred_models[user_id]}" + extra_msg)
+        else:
+            extra_msg2 = ""
+            if not AI_ALLOW_USERS_TO_CHANGE_MODEL:
+                extra_msg2 = " and cannot be changed"
+            await reply(ctx.message, f"your current model is {AI_MODEL}" + extra_msg2)
+        return
+    if not AI_ALLOW_USERS_TO_CHANGE_MODEL:
+        await reply(ctx.message, f"sorry, the person running this bot has disabled changing models, so you are stuck with {AI_MODEL}")
+        return
+    change_user_preferred_model(user_id, model_id)
+    await reply(ctx.message, f"your model has been changed to {model_id}")
 
 def run():
     bot.run(bot_token)
