@@ -142,7 +142,16 @@ async def aideletechat(ctx, *, chat_name=None):
         return
     await reply(ctx.message, f"the {chat_name} chat has been deleted")
 
-@bot.command(help="Changes your model")
+@bot.command(brief="Changes your model", 
+             help="""Changes your model.
+             Make sure to set the model ID according to the format of the API the bot is currently using.
+             For example, if the API is OpenRouter (the default), the model ID could be "organization/model", for example "openai/gpt-4o".
+             If it's set to OpenAI, it might be "gpt-4o".
+             You can check which API the model is using using the aiapibase command. This will show the base URL of the AI API.
+
+             You can't change the model yourself unless the person managing this bot enables it in the configuration.
+             For the person managing this bot: change AI_ALLOW_USERS_TO_CHANGE_MODEL to True in config.py to allow users to change their model. Keep in mind that this could drain your credit balance fast if users decide to use expensive models.
+             """)
 async def aimodel(ctx, *, model_id=None):
     user_id = ctx.message.author.id
     if model_id is None:
@@ -162,6 +171,10 @@ async def aimodel(ctx, *, model_id=None):
         return
     change_user_preferred_model(user_id, model_id)
     await reply(ctx.message, f"your model has been changed to {model_id}")
+
+@bot.command(help="Shows the API base URL the bot uses for AI services")
+async def aiapibase(ctx):
+    await reply(ctx.message, f"the api base url is <{AI_BASE_URL}>")
 
 def run():
     bot.run(bot_token)
