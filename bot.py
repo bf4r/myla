@@ -23,14 +23,16 @@ async def reply(msg, text):
     for part in parts:
         await msg.reply(part)
 
-@bot.command(help="Says something")
+@bot.command(brief="Says something",
+             description="Simply replies to your with the exact text you pass in the argument after say.")
 async def say(ctx, *, text=None):
     if text is None:
         await reply(ctx.message, "please specify what i should say")
         return
     await reply(ctx.message, text)
 
-@bot.command(help="Lists your AI chats")
+@bot.command(brief="Lists your AI chats",
+             description="Lists the AI chats associated with your account along with their message counts.")
 async def aichats(ctx):
     chats = get_ai_chats(ctx.message.author.id)
     if not chats:
@@ -41,7 +43,8 @@ async def aichats(ctx):
         sb += chat_name + f"\n  {len(chat['messages'])} messages\n"
     await reply(ctx.message, sb)
 
-@bot.command(help="Prompts AI in the current chat")
+@bot.command(brief="Prompts AI in the current chat",
+             description="Sends the prompt in your current active chat to the model you have selected.\nIf you have no active chat, a chat called default will be created.")
 async def ai(ctx, *, prompt=None):
     if prompt is None:
         await reply(ctx.message, "please provide a prompt")
