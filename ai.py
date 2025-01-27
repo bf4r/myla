@@ -91,3 +91,8 @@ def reset_ai_chat(user_id, chat_name):
 
 def change_user_default_ai_system_message(user_id, text):
     ai_user_default_system_messages[user_id] = text
+
+def delete_ai_chat(user_id, chat_name):
+    if user_id in ai_chats:
+        if chat_name in ai_chats[user_id]:
+            del ai_chats[user_id][chat_name]

@@ -52,7 +52,11 @@ async def ai(ctx, *, prompt=None):
 @bot.command(help="Switches to or creates another AI chat")
 async def aichat(ctx, *, chat_name=None):
     if chat_name is None:
-        chat_name = "default"
+        user_id = ctx.message.author.id
+        if user_id in ai_user_active_chats:
+            await reply(ctx.message, f"your current active chat is {ai_user_active_chats[user_id]}")
+        else:
+            await reply(ctx.message, "you don't have an active chat")
         return
     switch_ai_chat(ctx.message.author.id, chat_name)
     await reply(ctx.message, "switched chat to " + chat_name)
@@ -68,7 +72,7 @@ async def aireset(ctx, *, chat_name=None):
             chat_name = ai_user_active_chats[user_id]
 
     reset_ai_chat(ctx.message.author.id, chat_name)
-    await reply(ctx.message, f"reset the {chat_name} chat")
+    await reply(ctx.message, f"your {chat_name} chat has been reset")
 
 @bot.command(help="Shows the messages of a chat")
 async def aimessages(ctx, *, chat_name=None):
@@ -119,7 +123,25 @@ async def aisystem(ctx, *, message=None):
         messages[0]["content"] = message
         await reply(ctx.message, f"the system message for the chat {active_chat_name} has been changed")
     else:
-        await reply(ctx.message, "there is no system message at the start of the chat")
+        await reply(ctx.message, "there's no system message at the start of the chat")
+
+@bot.command(help="Deletes a chat")
+async def aideletechat(ctx, *, chat_name=None):
+    user_id = ctx.message.author.id
+    if chat_name is None:
+        if user_id not in ai_user_active_chats:
+            await reply(ctx.message, "you don't have an active chat, please chat or provide a chat name")
+            return
+        else:
+            chat_name = ai_user_active_chats[user_id]
+
+    delete_ai_chat(ctx.message.author.id, chat_name)
+    if user_id in ai_user_active_chats and ai_user_active_chats[user_id] == chat_name:
+        ai_user_active_chats[user_id] = "default"
+        await reply(ctx.message, f"the {chat_name} chat has been deleted, switched chat to default")
+        return
+    await reply(ctx.message, f"the {chat_name} chat has been deleted")
+
 
 def run():
     bot.run(bot_token)
