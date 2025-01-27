@@ -68,7 +68,8 @@ async def ai(ctx, *, prompt=None):
     if prompt is None:
         await reply(ctx.message, "please provide a prompt")
         return
-    response_text = await ask_ai(ctx.message.author.id, prompt)
+    async with ctx.typing():
+        response_text = await ask_ai(ctx.message.author.id, prompt)
     await reply(ctx.message, response_text)
 
 @bot.command(help="Switches to or creates another AI chat")
