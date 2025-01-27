@@ -64,7 +64,8 @@ async def aichat(ctx, *, chat_name=None):
     switch_ai_chat(ctx.message.author.id, chat_name)
     await reply(ctx.message, "switched chat to " + chat_name)
 
-@bot.command(help="Resets a chat")
+@bot.command(brief="Resets a chat",
+             description="If executed without arguments, resets your current active chat. If you specify a chat name, it will reset that chat. Leaves only your/the default system message.")
 async def aireset(ctx, *, chat_name=None):
     user_id = ctx.message.author.id
     if chat_name is None:
@@ -77,7 +78,8 @@ async def aireset(ctx, *, chat_name=None):
     reset_ai_chat(ctx.message.author.id, chat_name)
     await reply(ctx.message, f"your {chat_name} chat has been reset")
 
-@bot.command(help="Shows the messages of a chat")
+@bot.command(brief="Shows the messages of a chat",
+             description="Lists the messages in a chat. If no argument is provided, shows the messages in the current chat. Otherwise it lists all messages in the specified chat.")
 async def aimessages(ctx, *, chat_name=None):
     user_id = ctx.message.author.id
     if chat_name is None:
@@ -100,7 +102,8 @@ async def aimessages(ctx, *, chat_name=None):
         sb += f"{message['role']}: {message['content']}\n"
     await reply(ctx.message, sb)
 
-@bot.command(help="Changes your default system message for all new chats")
+@bot.command(brief="Changes your default system message for all new chats",
+             description="Sets the system message for future chats or ones that are reset that you own to the specified message. Your current chats will be left unaffected.")
 async def aisystemdefault(ctx, *, message=None):
     if message is None:
         await reply(ctx.message, "please provide a system message")
@@ -128,7 +131,8 @@ async def aisystem(ctx, *, message=None):
     else:
         await reply(ctx.message, "there's no system message at the start of the chat")
 
-@bot.command(help="Deletes a chat")
+@bot.command(brief="Deletes a chat",
+             description="Deletes a chat completely, including the system message, preventing it from showing up in your chat list.")
 async def aideletechat(ctx, *, chat_name=None):
     user_id = ctx.message.author.id
     if chat_name is None:
