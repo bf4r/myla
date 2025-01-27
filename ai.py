@@ -31,7 +31,11 @@ ai_user_active_chats = {}
 # default system messages for each user, defaults to the AI_DEFAULT_SYSTEM_MESSAGE
 ai_user_default_system_messages = {}
 
+# user models selected by each user
 ai_user_preferred_models = {}
+
+# user ids to automatically respond to with AI
+ai_focused_users = []
 
 async def ask_ai(user_id, prompt):
     if user_id not in ai_user_active_chats:
