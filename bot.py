@@ -23,6 +23,13 @@ async def reply(msg, text):
     for part in parts:
         await msg.reply(part)
 
+@bot.event
+async def on_message(message):
+    print(f"{message.author}: {message.content}")
+    await bot.process_commands(message)
+
+# ----------------------------------------------------------------------------------------------------
+
 @bot.command(brief="Says something",
              description="Simply replies to your with the exact text you pass in the argument after say.")
 async def say(ctx, *, text=None):
