@@ -24,11 +24,11 @@ async def reply(msg, text):
         await msg.reply(part)
 
 @bot.command(help="Says something")
-async def say(ctx, arg=None):
-    if arg is None:
+async def say(ctx, *, text=None):
+    if text is None:
         await reply(ctx.message, "please specify what i should say")
         return
-    await reply(ctx.message, arg)
+    await reply(ctx.message, text)
 
 @bot.command(help="Lists your AI chats")
 async def aichats(ctx):
@@ -42,68 +42,68 @@ async def aichats(ctx):
     await reply(ctx.message, sb)
 
 @bot.command(help="Prompts AI in the current chat")
-async def ai(ctx, arg=None):
-    if arg is None:
+async def ai(ctx, *, prompt=None):
+    if prompt is None:
         await reply(ctx.message, "please provide a prompt")
         return
-    response_text = await ask_ai(ctx.message.author.id, arg)
+    response_text = await ask_ai(ctx.message.author.id, prompt)
     await reply(ctx.message, response_text)
 
 @bot.command(help="Switches to or creates another AI chat")
-async def aichat(ctx, arg=None):
-    if arg is None:
-        arg = "default"
+async def aichat(ctx, *, chat_name=None):
+    if chat_name is None:
+        chat_name = "default"
         return
-    switch_ai_chat(ctx.message.author.id, arg)
-    await reply(ctx.message, "switched chat to " + arg)
+    switch_ai_chat(ctx.message.author.id, chat_name)
+    await reply(ctx.message, "switched chat to " + chat_name)
 
 @bot.command(help="Resets a chat")
-async def aireset(ctx, arg=None):
+async def aireset(ctx, *, chat_name=None):
     user_id = ctx.message.author.id
-    if arg is None:
+    if chat_name is None:
         if user_id not in ai_user_active_chats:
             await reply(ctx.message, "you don't have an active chat")
             return
         else:
-            arg = ai_user_active_chats[user_id]
+            chat_name = ai_user_active_chats[user_id]
 
-    reset_ai_chat(ctx.message.author.id, arg)
-    await reply(ctx.message, f"reset the {arg} chat")
+    reset_ai_chat(ctx.message.author.id, chat_name)
+    await reply(ctx.message, f"reset the {chat_name} chat")
 
 @bot.command(help="Shows the messages of a chat")
-async def aimessages(ctx, arg=None):
+async def aimessages(ctx, *, chat_name=None):
     user_id = ctx.message.author.id
-    if arg is None:
+    if chat_name is None:
         if user_id not in ai_user_active_chats:
             await reply(ctx.message, "you don't have an active chat")
             return
         else:
-            arg = ai_user_active_chats[user_id]
+            chat_name = ai_user_active_chats[user_id]
 
     user_id = ctx.message.author.id
     if user_id not in ai_chats:
         await reply(ctx.message, "you don't have any chats")
         return
-    if arg not in ai_chats[user_id]:
+    if chat_name not in ai_chats[user_id]:
         await reply(ctx.message, "you don't have a chat with that name")
         return
-    messages = ai_chats[user_id][arg]["messages"]
+    messages = ai_chats[user_id][chat_name]["messages"]
     sb = ""
     for message in messages:
         sb += f"{message['role']}: {message['content']}\n"
     await reply(ctx.message, sb)
 
 @bot.command(help="Changes your default system message for all new chats")
-async def aisystemdefault(ctx, arg=None):
-    if arg is None:
+async def aisystemdefault(ctx, *, message=None):
+    if message is None:
         await reply(ctx.message, "please provide a system message")
         return
-    change_user_default_ai_system_message(ctx.message.author.id, arg)
+    change_user_default_ai_system_message(ctx.message.author.id, message)
     await reply(ctx.message, "your default system message has been changed")
 
 @bot.command(help="Changes the system message for the currently active chat")
-async def aisystem(ctx, arg=None):
-    if arg is None:
+async def aisystem(ctx, *, message=None):
+    if message is None:
         await reply(ctx.message, "please provide a system message")
         return
     user_id = ctx.message.author.id
@@ -116,7 +116,7 @@ async def aisystem(ctx, arg=None):
     active_chat_name = ai_user_active_chats[user_id]
     messages = ai_chats[user_id][active_chat_name]["messages"]
     if (messages and len(messages) > 0 and messages[0].get("role") == "system"):
-        messages[0]["content"] = arg
+        messages[0]["content"] = message
         await reply(ctx.message, f"the system message for the chat {active_chat_name} has been changed")
     else:
         await reply(ctx.message, "there is no system message at the start of the chat")
