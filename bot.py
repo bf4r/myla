@@ -183,6 +183,9 @@ async def aimodel(ctx, *, model_id=None):
 
 @bot.command(help="Shows the API base URL the bot uses for AI services")
 async def aiapibase(ctx):
+    if not AI_ALLOW_APIBASE_REVEAL:
+        await reply(ctx.message, "sorry, the api base url is currently secret")
+        return
     await reply(ctx.message, f"the api base url is <{AI_BASE_URL}>")
 
 def run():

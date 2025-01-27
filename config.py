@@ -7,7 +7,9 @@ COMMAND_PREFIX = "."
 # users can view this using the aiapibase command
 AI_BASE_URL = "https://openrouter.ai/api/v1/"
 
-# todo: add option to disable aiapibase command
+# if this is set to false, the aiapibase command gets disabled. the command shows the AI base url to anyone who wants to see it.
+# useful if you have a private API and don't want to reveal its link.
+AI_ALLOW_APIBASE_REVEAL = True
 
 AI_MODEL = "openai/gpt-4o-mini" # adjust the name based on the API, for example in the OpenAI API it would be gpt-4o-mini, this one is for OpenRouter
 
