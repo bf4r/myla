@@ -1,6 +1,7 @@
 from openai import OpenAI
 import os
 from config import *
+from system_msg_presets import AI_PRESETS
 
 ai_api_key = os.environ.get("AI_API_KEY")
 if not ai_api_key:
@@ -13,6 +14,10 @@ ai_client = OpenAI(
 )
 
 ai_chats = {}
+
+AI_DEFAULT_SYSTEM_MESSAGE = "You are a helpful assistant."
+if AI_DEFAULT_SYSTEM_MESSAGE_PRESET in AI_PRESETS:
+    AI_DEFAULT_SYSTEM_MESSAGE = AI_PRESETS[AI_DEFAULT_SYSTEM_MESSAGE_PRESET]
 
 default_chat_preset = {
             "messages": [
