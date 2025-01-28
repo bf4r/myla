@@ -213,7 +213,7 @@ async def aifocus(ctx):
     user_id = ctx.message.author.id
     if user_id not in ai_focused_users:
         ai_focused_users.append(user_id)
-        await reply(ctx.message, "i will now respond to every message you send (turn off with aiunfocus)")
+        await reply(ctx.message, "i am now focused on you\n-# (aiunfocus to unfocus)")
     else:
         await reply(ctx.message, "i am already focused on you, you can turn it off with aiunfocus")
 
@@ -222,9 +222,9 @@ async def aiunfocus(ctx):
     user_id = ctx.message.author.id
     if user_id in ai_focused_users:
         ai_focused_users.remove(user_id)
-        await reply(ctx.message, "i will now stop responding to every message you send (now you have to use the ai command)")
+        await reply(ctx.message, "i am no longer focused on you")
     else:
-        await reply(ctx.message, "i am not focused on you, you can turn it on with aifocus")
+        await reply(ctx.message, "i am not focused on you")
 
 def run():
     bot.run(bot_token)
