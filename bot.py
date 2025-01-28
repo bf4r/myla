@@ -3,6 +3,7 @@ from discord.ext import commands
 from ai import *
 import os
 from config import *
+from system_msg_presets import AI_PRESETS
 
 bot_token = os.environ.get("MYLA_BOT_TOKEN")
 
@@ -208,7 +209,7 @@ async def aiapibase(ctx):
         return
     await reply(ctx.message, f"the api base url is <{AI_BASE_URL}>")
 
-@bot.command(help="Automatically respond with AI to every message you send")
+@bot.command(help="Automatically responds with AI to every message you send")
 async def aifocus(ctx):
     user_id = ctx.message.author.id
     if user_id not in ai_focused_users:
@@ -217,7 +218,7 @@ async def aifocus(ctx):
     else:
         await reply(ctx.message, "i am already focused on you, you can turn it off with aiunfocus")
 
-@bot.command(help="Turn off automatically responding to your messages with AI")
+@bot.command(help="Turns off automatically responding to your messages with AI")
 async def aiunfocus(ctx):
     user_id = ctx.message.author.id
     if user_id in ai_focused_users:
@@ -225,6 +226,35 @@ async def aiunfocus(ctx):
         await reply(ctx.message, "i am no longer focused on you")
     else:
         await reply(ctx.message, "i am not focused on you")
+
+@bot.command(help="Lists the system message presets")
+async def aisystempresets(ctx):
+    if AI_PRESETS:
+        sb = ""
+        for name, text in AI_PRESETS.items():
+            sb += name + ", "
+        # remove trailing ", "
+        if len(sb) > 0:
+            sb = sb[:-2]
+            await reply(ctx.message, sb)
+        else:
+            await reply(ctx.message, "there are currently no presets")
+
+@bot.command(help="Sets your system message to a preset")
+async def aisystempreset(ctx, *, preset=None):
+    if preset is None:
+        await reply(ctx.message, "please select a preset\n-# (list presets with aisystempresets)")
+        return
+    if preset in AI_PRESETS:
+        await aisystem(ctx, message=AI_PRESETS[preset])
+
+@bot.command(help="Sets your default system message to a preset")
+async def aisystemdefaultpreset(ctx, *, preset=None):
+    if preset is None:
+        await reply(ctx.message, "please select a preset\n-# (list presets with aisystempresets)")
+        return
+    if preset in AI_PRESETS:
+        await aisystemdefault(ctx, message=AI_PRESETS[preset])
 
 def run():
     bot.run(bot_token)
