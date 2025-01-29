@@ -256,5 +256,15 @@ async def aisystemdefaultpreset(ctx, *, preset=None):
     if preset in AI_PRESETS:
         await aisystemdefault(ctx, message=AI_PRESETS[preset])
 
+@bot.command(help="Shows what system message a preset sets")
+async def aishowsystempreset(ctx, *, preset=None):
+    if preset is None:
+        await reply(ctx.message, "please provide a preset\n-# (list presets with aisystempresets)")
+        return
+    if preset in AI_PRESETS:
+        await reply(ctx.message, AI_PRESETS[preset])
+    else:
+        await reply(ctx.message, "sorry, that preset doesn't exist")
+
 def run():
     bot.run(bot_token)
